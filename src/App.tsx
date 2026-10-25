@@ -103,6 +103,7 @@ export default function App() {
           <CodeExplorer
             currentVehicle={vehicleType}
             codeFocus={codeFocus}
+            onSelectVehicle={selectVehicleType}
           />
         </div>
       </main>

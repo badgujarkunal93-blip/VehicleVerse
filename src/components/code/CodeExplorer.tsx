@@ -9,23 +9,35 @@ import { Copy, Check, Download, Lightbulb } from 'lucide-react';
 interface CodeExplorerProps {
   currentVehicle: VehicleType;
   codeFocus: CodeFocusState;
+  onSelectVehicle?: (type: VehicleType) => void;
 }
 
 type TabType = 'Vehicle' | 'Car' | 'ElectricCar' | 'Complete';
 
-export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, codeFocus }) => {
+export const CodeExplorer: React.FC<CodeExplorerProps> = ({
+  currentVehicle,
+  codeFocus,
+  onSelectVehicle
+}) => {
   const [activeTab, setActiveTab] = useState<TabType>(currentVehicle);
   const [copied, setCopied] = useState(false);
   const codeContainerRef = useRef<HTMLDivElement>(null);
+  const lastVehicleRef = useRef<VehicleType>(currentVehicle);
 
-  // Sync tab with vehicle selection unless user clicked Complete
+  // When user switches vehicle in the simulation selector, update the code tab
+  useEffect(() => {
+    if (lastVehicleRef.current !== currentVehicle) {
+      lastVehicleRef.current = currentVehicle;
+      setActiveTab(currentVehicle);
+    }
+  }, [currentVehicle]);
+
+  // When codeFocus explicitly targets Complete or a class due to a major action
   useEffect(() => {
     if (codeFocus.targetClass === 'Complete') {
       setActiveTab('Complete');
-    } else {
-      setActiveTab(codeFocus.targetClass || currentVehicle);
     }
-  }, [currentVehicle, codeFocus.targetClass]);
+  }, [codeFocus.targetClass]);
 
   // Active code text
   const currentCode = useMemo(() => {
@@ -40,15 +52,14 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
     if (activeTab === 'Complete') {
       return [];
     }
+    // Only highlight if current tab matches the focus target class
+    if (codeFocus.targetClass && codeFocus.targetClass !== activeTab) {
+      return [];
+    }
     const classDef = CPP_CLASSES[activeTab];
     const targetRange = classDef.focusLineRanges[codeFocus.target];
     return targetRange ? targetRange.lines : [];
-  }, [activeTab, codeFocus.target]);
-
-  // Re-run Prism highlight whenever code or tab changes
-  useEffect(() => {
-    Prism.highlightAll();
-  }, [currentCode, activeTab, highlightedLines]);
+  }, [activeTab, codeFocus.target, codeFocus.targetClass]);
 
   // Auto-scroll code container to the first highlighted line smoothly
   useEffect(() => {
@@ -79,6 +90,15 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleTabClick = (tab: TabType) => {
+    setActiveTab(tab);
+    // If clicking a vehicle tab, also sync with simulation if callback provided
+    if (tab !== 'Complete' && onSelectVehicle && tab !== currentVehicle) {
+      lastVehicleRef.current = tab;
+      onSelectVehicle(tab);
+    }
   };
 
   const lines = useMemo(() => currentCode.split('\n'), [currentCode]);
@@ -112,7 +132,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
             {copied ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700">Copied</span>
+                <span className="text-emerald-700 font-medium">Copied</span>
               </>
             ) : (
               <>
@@ -136,7 +156,7 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
 
       {/* Editor Container Card */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col flex-1 overflow-hidden min-h-0">
-        {/* Tabs Row */}
+        {/* Tabs Row with Reliable Click Handling */}
         <div className="flex items-center space-x-1 px-3 border-b border-slate-200 bg-slate-50/60 overflow-x-auto text-xs font-sans">
           {(['Vehicle', 'Car', 'ElectricCar', 'Complete'] as TabType[]).map((tab) => {
             const isActive = activeTab === tab;
@@ -145,11 +165,11 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2.5 transition-all duration-150 font-medium whitespace-nowrap text-xs border-b-2 ${
+                onClick={() => handleTabClick(tab)}
+                className={`px-4 py-2.5 transition-all duration-150 font-medium whitespace-nowrap text-xs border-b-2 cursor-pointer ${
                   isActive
                     ? 'border-blue-600 text-blue-600 font-semibold bg-white'
-                    : 'border-transparent text-slate-600 hover:text-slate-900'
+                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
                 }`}
               >
                 {label}
@@ -158,40 +178,46 @@ export const CodeExplorer: React.FC<CodeExplorerProps> = ({ currentVehicle, code
           })}
         </div>
 
-        {/* Syntax-Highlighted Code View */}
+        {/* Syntax-Highlighted Code View - Individual Lines Rendered Separately */}
         <div
           ref={codeContainerRef}
           className="flex-1 overflow-y-auto overflow-x-auto p-4 font-mono text-[12px] bg-white leading-relaxed"
         >
-          <pre className="!bg-transparent !p-0 !m-0 !overflow-visible">
-            <code className="language-cpp">
-              {lines.map((line, idx) => {
-                const lineNum = idx + 1;
-                const isHighlighted = highlightedLines.includes(lineNum);
-                return (
-                  <div
-                    key={lineNum}
-                    data-line={lineNum}
-                    className={`flex items-start transition-colors duration-150 ${
-                      isHighlighted ? 'line-highlight' : 'hover:bg-slate-50/70'
+          <pre className="!bg-transparent !p-0 !m-0 !overflow-visible font-mono">
+            {lines.map((line, idx) => {
+              const lineNum = idx + 1;
+              const isHighlighted = highlightedLines.includes(lineNum);
+              // Safely highlight individual line using Prism tokenization
+              const grammar = Prism.languages.cpp || Prism.languages.c || Prism.languages.javascript;
+              const highlightedHtml = grammar 
+                ? Prism.highlight(line || ' ', grammar, 'cpp') 
+                : (line || ' ');
+
+              return (
+                <div
+                  key={lineNum}
+                  data-line={lineNum}
+                  className={`flex items-start transition-colors duration-150 py-[1px] ${
+                    isHighlighted ? 'line-highlight bg-blue-50/90' : 'hover:bg-slate-50/70'
+                  }`}
+                >
+                  {/* Line Number Gutter */}
+                  <span
+                    className={`select-none text-right pr-4 w-10 flex-shrink-0 text-[11px] font-mono ${
+                      isHighlighted ? 'text-blue-600 font-bold' : 'text-slate-400'
                     }`}
                   >
-                    {/* Line Number Gutter */}
-                    <span
-                      className={`select-none text-right pr-3.5 w-9 flex-shrink-0 text-[11px] font-mono ${
-                        isHighlighted ? 'text-blue-600 font-bold' : 'text-slate-400'
-                      }`}
-                    >
-                      {lineNum}
-                    </span>
-                    {/* Line Content */}
-                    <span className="flex-1 pr-2 whitespace-pre text-slate-800">
-                      {line || ' '}
-                    </span>
-                  </div>
-                );
-              })}
-            </code>
+                    {lineNum}
+                  </span>
+
+                  {/* Line Code Content with Deterministic Prism Syntax Spans */}
+                  <span
+                    className="flex-1 pr-2 whitespace-pre text-slate-800 font-mono"
+                    dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+                  />
+                </div>
+              );
+            })}
           </pre>
         </div>
       </div>
