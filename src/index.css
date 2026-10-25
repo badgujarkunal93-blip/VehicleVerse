@@ -4,44 +4,32 @@
 
 @layer base {
   body {
-    @apply bg-graphite-950 text-slate-200 antialiased font-sans selection:bg-cyan-500/20 selection:text-cyan-300;
+    @apply bg-slate-50 text-slate-800 antialiased font-sans selection:bg-blue-500/20 selection:text-blue-600;
     overflow-x: hidden;
   }
 }
 
-/* Custom technical scrollbar */
+/* Clean Modern Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(11, 15, 23, 0.7);
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 68, 98, 0.6);
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 242, 254, 0.5);
+  background: #94a3b8;
 }
 
-/* Technical Grid Pattern */
-.bg-tech-grid {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-}
-
-.bg-radial-gradient {
-  background: radial-gradient(circle at 50% 20%, rgba(0, 242, 254, 0.08) 0%, transparent 70%);
-}
-
-/* Prism C++ Custom Highlighting */
+/* Prism C++ Highlighting - Modern Clean Light Theme (GitHub/VSCode Light) */
 code[class*="language-"],
 pre[class*="language-"] {
-  color: #e2e8f0;
-  font-family: 'JetBrains Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  color: #0f172a;
+  font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
   font-size: 0.8125rem;
   line-height: 1.6;
   direction: ltr;
@@ -62,7 +50,7 @@ pre[class*="language-"] {
 }
 
 .token.punctuation {
-  color: #94a3b8;
+  color: #475569;
 }
 
 .token.property,
@@ -72,7 +60,7 @@ pre[class*="language-"] {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #f59e0b;
+  color: #d97706;
 }
 
 .token.selector,
@@ -81,7 +69,7 @@ pre[class*="language-"] {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #10b981;
+  color: #059669;
 }
 
 .token.operator,
@@ -89,29 +77,30 @@ pre[class*="language-"] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-  color: #38bdf8;
+  color: #2563eb;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #c084fc;
+  color: #7c3aed;
   font-weight: 600;
 }
 
 .token.function,
 .token.class-name {
-  color: #38bdf8;
+  color: #0284c7;
+  font-weight: 600;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-  color: #fb7185;
+  color: #e11d48;
 }
 
-/* Code line highlight effect */
+/* Active Line Highlight - Light Blue Tint with Left Indicator */
 .line-highlight {
-  background: linear-gradient(90deg, rgba(0, 242, 254, 0.16) 0%, rgba(0, 242, 254, 0.03) 100%);
-  border-left: 3px solid #00f2fe;
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
 }

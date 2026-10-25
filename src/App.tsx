@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useVehicleSimulation } from './hooks/useVehicleSimulation';
 import { ActiveTab } from './types/vehicle';
 import { Navbar } from './components/common/Navbar';
@@ -24,12 +24,49 @@ export default function App() {
     toggleCruiseControl,
     resetSimulation,
     setThrottleActive,
-    setBrakeActive
+    setBrakeActive,
+    clearEvents
   } = useVehicleSimulation();
 
+  // Global Keyboard Shortcuts (matching hints: ↑ or W, ↓ or S, Space, R)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is inside an input or editable element
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        e.preventDefault();
+        setThrottleActive(true);
+      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setBrakeActive(true);
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        toggleEngine();
+      } else if (e.key === 'r' || e.key === 'R') {
+        resetSimulation();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        setThrottleActive(false);
+      } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        setBrakeActive(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [setThrottleActive, setBrakeActive, toggleEngine, resetSimulation]);
+
   return (
-    <div className="min-h-screen h-screen flex flex-col bg-graphite-950 bg-tech-grid text-slate-100 overflow-hidden font-sans">
-      {/* Top Application Navbar */}
+    <div className="min-h-screen h-screen flex flex-col bg-slate-50 text-slate-800 overflow-hidden font-sans">
+      {/* Top Application Navbar matching reference */}
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -37,10 +74,10 @@ export default function App() {
         onReset={resetSimulation}
       />
 
-      {/* Main Dual-Column Engineering Workspace */}
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* LEFT COLUMN: 63% Width - Simulation & Educational Workspace */}
-        <div className="w-full lg:w-[63%] h-full flex flex-col overflow-hidden bg-graphite-950/70 border-r border-slate-800">
+      {/* Main Dual-Column Workspace with consistent alignment and spacing */}
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden p-3.5 lg:p-5 gap-4 lg:gap-5 w-full max-w-[1800px] mx-auto">
+        {/* LEFT COLUMN: ~61% Width - Simulation & Educational Workspace */}
+        <div className="w-full lg:w-[61%] h-full flex flex-col overflow-hidden min-w-0">
           <SimulationWorkspace
             activeTab={activeTab}
             vehicleType={vehicleType}
@@ -57,11 +94,12 @@ export default function App() {
             onReset={resetSimulation}
             setThrottleActive={setThrottleActive}
             setBrakeActive={setBrakeActive}
+            onClearEvents={clearEvents}
           />
         </div>
 
-        {/* RIGHT COLUMN: 37% Width - Persistent C++ Code Explorer */}
-        <div className="w-full lg:w-[37%] h-full flex flex-col overflow-hidden bg-graphite-900 border-t lg:border-t-0 border-slate-800">
+        {/* RIGHT COLUMN: ~39% Width - Persistent C++ Code Explorer */}
+        <div className="w-full lg:w-[39%] h-full flex flex-col overflow-hidden min-w-0">
           <CodeExplorer
             currentVehicle={vehicleType}
             codeFocus={codeFocus}

@@ -32,6 +32,7 @@ interface SimulationWorkspaceProps {
   onReset: () => void;
   setThrottleActive: (active: boolean) => void;
   setBrakeActive: (active: boolean) => void;
+  onClearEvents?: () => void;
 }
 
 export const SimulationWorkspace: React.FC<SimulationWorkspaceProps> = ({
@@ -39,7 +40,6 @@ export const SimulationWorkspace: React.FC<SimulationWorkspaceProps> = ({
   vehicleType,
   state,
   events,
-  telemetryHistory,
   onSelectVehicle,
   onAccelerate,
   onBrake,
@@ -49,28 +49,45 @@ export const SimulationWorkspace: React.FC<SimulationWorkspaceProps> = ({
   onToggleCruise,
   onReset,
   setThrottleActive,
-  setBrakeActive
+  setBrakeActive,
+  onClearEvents
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
+    <div className="flex-1 overflow-y-auto space-y-4 pr-1">
       {/* Tab 1: 3D Interactive Simulation View */}
       {activeTab === 'simulation' && (
         <>
-          {/* Vehicle Class Selector Hierarchy Cards */}
-          <VehicleSelector
-            currentType={vehicleType}
-            onSelect={onSelectVehicle}
-          />
+          {/* Top Section Header Row matching reference image */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight font-sans">
+                3D Vehicle Simulation
+              </h2>
+              <p className="text-xs text-slate-500 font-sans">
+                Select a vehicle class and control it to see inheritance in action.
+              </p>
+            </div>
+
+            {/* Compact Segmented Vehicle Selector */}
+            <VehicleSelector
+              currentType={vehicleType}
+              onSelect={onSelectVehicle}
+            />
+          </div>
 
           {/* 3D WebGL Vehicle Simulation Stage */}
-          <div className="h-[360px] sm:h-[400px] rounded-xl overflow-hidden border border-slate-800 shadow-2xl relative">
+          <div className="h-[380px] sm:h-[400px] rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm relative">
             <VehicleScene3D
               type={vehicleType}
               speed={state.speed}
+              distance={state.distance}
               engineState={state.engineState}
               isEngineOn={state.isEngineOn}
             />
           </div>
+
+          {/* Telemetry 4-Card Strip */}
+          <TelemetryPanel state={state} />
 
           {/* Interactive Drivetrain Controls */}
           <VehicleControls
@@ -86,14 +103,8 @@ export const SimulationWorkspace: React.FC<SimulationWorkspaceProps> = ({
             setBrakeActive={setBrakeActive}
           />
 
-          {/* Telemetry Strip & Speed Chart */}
-          <TelemetryPanel
-            state={state}
-            telemetryHistory={telemetryHistory}
-          />
-
-          {/* Simulation Event Log */}
-          <EventLog events={events} />
+          {/* Event Log */}
+          <EventLog events={events} onClear={onClearEvents} />
         </>
       )}
 

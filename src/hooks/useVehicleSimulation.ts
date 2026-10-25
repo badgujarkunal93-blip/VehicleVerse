@@ -64,6 +64,10 @@ export function useVehicleSimulation() {
     ]);
   }, []);
 
+  const clearEvents = useCallback(() => {
+    setEvents([]);
+  }, []);
+
   // Switch Vehicle Type
   const selectVehicleType = useCallback((newType: VehicleType) => {
     setVehicleType(newType);
@@ -482,6 +486,7 @@ export function useVehicleSimulation() {
     toggleCruiseControl,
     resetSimulation,
     setThrottleActive,
-    setBrakeActive
+    setBrakeActive,
+    clearEvents
   };
 }

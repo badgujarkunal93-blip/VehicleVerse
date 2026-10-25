@@ -95,11 +95,10 @@ export const QuizPanel: React.FC = () => {
   const isAnswered = selectedAnswers[currentQ.id] !== undefined;
 
   const handleSelectOption = (optIndex: number) => {
-    if (selectedAnswers[currentQ.id] !== undefined) return; // Prevent changing after answer
+    if (selectedAnswers[currentQ.id] !== undefined) return;
     const nextAnswers = { ...selectedAnswers, [currentQ.id]: optIndex };
     setSelectedAnswers(nextAnswers);
 
-    // If answering the last question, check if completed
     if (Object.keys(nextAnswers).length === totalQuestions) {
       const score = Object.entries(nextAnswers).reduce((acc, [qId, ans]) => {
         const q = QUIZ_QUESTIONS.find(item => item.id === Number(qId));
@@ -130,26 +129,25 @@ export const QuizPanel: React.FC = () => {
     setIsSubmitted(false);
   };
 
-  // Calculate score
   const score = Object.entries(selectedAnswers).reduce((acc, [qId, ans]) => {
     const q = QUIZ_QUESTIONS.find(item => item.id === Number(qId));
     return q && q.correctIndex === ans ? acc + 1 : acc;
   }, 0);
 
   return (
-    <div className="bg-graphite-900 border border-slate-800 rounded-lg p-4 shadow-xl flex flex-col gap-4">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <HelpCircle className="w-4 h-4 text-cyan" />
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-blue-600" />
             OOP Vehicle Hierarchy Knowledge Quiz
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Test your understanding of Single vs Multilevel inheritance, protected members, and constructor chains.
           </p>
         </div>
-        <div className="text-xs font-mono px-2.5 py-1 rounded bg-graphite-800 border border-slate-700 text-cyan">
+        <div className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-600">
           Question {currentIdx + 1} of {totalQuestions}
         </div>
       </div>
@@ -157,11 +155,11 @@ export const QuizPanel: React.FC = () => {
       {!isSubmitted ? (
         <div className="space-y-4">
           {/* Question Text */}
-          <div className="p-3 rounded-lg bg-graphite-950/70 border border-slate-800">
-            <span className="text-xs font-mono text-cyan font-semibold block mb-1">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider block mb-1">
               QUESTION {currentQ.id}
             </span>
-            <p className="text-sm font-medium text-slate-100 leading-relaxed">
+            <p className="text-sm font-semibold text-slate-900 leading-relaxed">
               {currentQ.question}
             </p>
           </div>
@@ -172,12 +170,12 @@ export const QuizPanel: React.FC = () => {
               const chosen = selectedAnswers[currentQ.id] === optIdx;
               const isCorrect = currentQ.correctIndex === optIdx;
 
-              let btnStyle = 'border-slate-800 bg-graphite-950/60 hover:border-slate-700 text-slate-300';
+              let btnStyle = 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700';
               if (isAnswered) {
                 if (isCorrect) {
-                  btnStyle = 'border-emerald-500 bg-emerald-950/40 text-emerald-300 font-semibold ring-1 ring-emerald-500/40';
+                  btnStyle = 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold';
                 } else if (chosen && !isCorrect) {
-                  btnStyle = 'border-rose-500 bg-rose-950/40 text-rose-300 font-semibold ring-1 ring-rose-500/40';
+                  btnStyle = 'border-rose-300 bg-rose-50 text-rose-800 font-semibold';
                 }
               }
 
@@ -186,32 +184,32 @@ export const QuizPanel: React.FC = () => {
                   key={optIdx}
                   type="button"
                   onClick={() => handleSelectOption(optIdx)}
-                  className={`w-full p-3 text-left rounded-lg border text-xs font-mono flex items-center justify-between transition-all duration-150 ${btnStyle}`}
+                  className={`w-full p-3.5 text-left rounded-xl border text-xs flex items-center justify-between transition-all duration-150 ${btnStyle}`}
                 >
-                  <div className="flex items-center space-x-2.5">
-                    <span className="w-5 h-5 rounded-md bg-graphite-800 flex items-center justify-center text-[11px] font-bold text-slate-400">
+                  <div className="flex items-center space-x-3">
+                    <span className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600">
                       {String.fromCharCode(65 + optIdx)}
                     </span>
-                    <span>{opt}</span>
+                    <span className="font-medium text-xs">{opt}</span>
                   </div>
                   {isAnswered && isCorrect && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   )}
                   {isAnswered && chosen && !isCorrect && (
-                    <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <XCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                   )}
                 </button>
               );
             })}
           </div>
 
-          {/* Explanation Callout (appears once answered) */}
+          {/* Explanation Callout */}
           {isAnswered && (
-            <div className="p-3 rounded-lg bg-graphite-950 border border-slate-800 text-xs">
-              <span className="font-semibold text-cyan font-mono block mb-1">
+            <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200 text-xs">
+              <span className="font-bold text-blue-900 block mb-1">
                 {selectedAnswers[currentQ.id] === currentQ.correctIndex ? '✓ Correct Answer!' : '✗ Incorrect'}
               </span>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 {currentQ.explanation}
               </p>
             </div>
@@ -219,7 +217,7 @@ export const QuizPanel: React.FC = () => {
 
           {/* Navigation Buttons */}
           <div className="flex items-center justify-between pt-2">
-            <span className="text-xs font-mono text-slate-500">
+            <span className="text-xs font-medium text-slate-500">
               Current Score: {score} / {Object.keys(selectedAnswers).length}
             </span>
 
@@ -227,29 +225,29 @@ export const QuizPanel: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-cyan text-graphite-950 font-mono text-xs font-bold hover:bg-cyan-300 transition-colors shadow-md"
+                className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors shadow-sm"
               >
                 <span>{currentIdx < totalQuestions - 1 ? 'Next Question' : 'View Results'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
       ) : (
         /* Results View */
-        <div className="p-6 rounded-lg bg-graphite-950/80 border border-slate-800 text-center space-y-4">
-          <div className="w-14 h-14 mx-auto rounded-full bg-cyan/10 border border-cyan/40 flex items-center justify-center text-cyan">
+        <div className="p-6 rounded-xl bg-white border border-slate-200 text-center space-y-4">
+          <div className="w-14 h-14 mx-auto rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
             <Award className="w-8 h-8" />
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-slate-100">Quiz Completed!</h3>
-            <p className="text-xs text-slate-400 mt-1">
-              You scored <span className="font-bold text-cyan text-sm">{score}</span> out of <span className="text-sm">{totalQuestions}</span> ({Math.round((score / totalQuestions) * 100)}%)
+            <h3 className="text-lg font-bold text-slate-900">Quiz Completed!</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              You scored <span className="font-bold text-blue-600 text-sm">{score}</span> out of <span className="text-sm">{totalQuestions}</span> ({Math.round((score / totalQuestions) * 100)}%)
             </p>
           </div>
 
-          <div className="p-3 rounded bg-graphite-900 border border-slate-800 text-xs text-slate-300 max-w-md mx-auto">
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
             {score === totalQuestions
               ? 'Outstanding! You have mastered C++ single and multilevel inheritance hierarchies, constructor ordering, and access modifiers.'
               : 'Great effort! Review the UML inheritance map and C++ code explorer to reinforce the constructor chains and protected access rules.'}
@@ -258,7 +256,7 @@ export const QuizPanel: React.FC = () => {
           <button
             type="button"
             onClick={handleRestart}
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-graphite-800 border border-slate-700 text-slate-200 hover:text-cyan hover:border-cyan text-xs font-mono font-semibold transition-all shadow-md"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-all shadow-sm"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Restart Quiz</span>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, CheckCircle } from 'lucide-react';
 
 interface ConceptTopic {
@@ -124,19 +124,19 @@ v->accelerate(); // Polymorphic invocation`
   ];
 
   return (
-    <div className="bg-graphite-900 border border-slate-800 rounded-lg p-4 shadow-xl flex flex-col gap-4">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
       {/* Header */}
-      <div className="pb-3 border-b border-slate-800 flex items-center justify-between">
+      <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-cyan" />
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-blue-600" />
             C++ OOP Inheritance Concepts Reference
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Core theoretical principles required for the Vehicle Hierarchy college assignment.
           </p>
         </div>
-        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan/10 border border-cyan/30 text-cyan">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-600">
           {topics.length} Key Topics
         </span>
       </div>
@@ -148,44 +148,46 @@ v->accelerate(); // Polymorphic invocation`
           return (
             <div
               key={t.id}
-              className="rounded-lg border border-slate-800 bg-graphite-950/60 overflow-hidden transition-all duration-200"
+              className={`rounded-xl border transition-all duration-150 overflow-hidden ${
+                isExpanded ? 'border-blue-200 bg-blue-50/20 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'
+              }`}
             >
               <button
                 type="button"
                 onClick={() => setExpandedId(isExpanded ? '' : t.id)}
-                className="w-full p-3 text-left flex items-center justify-between hover:bg-slate-800/40 transition-colors"
+                className="w-full p-3.5 text-left flex items-center justify-between transition-colors"
               >
                 <div className="flex items-center space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-cyan/10 text-cyan border border-cyan/30 text-xs font-mono font-bold flex items-center justify-center">
+                  <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs font-mono font-bold flex items-center justify-center">
                     {t.id.replace('c', '')}
                   </span>
-                  <span className="font-semibold text-sm text-slate-200">
+                  <span className="font-semibold text-sm text-slate-900">
                     {t.question}
                   </span>
                 </div>
                 {isExpanded ? (
-                  <ChevronUp className="w-4 h-4 text-cyan" />
+                  <ChevronUp className="w-4 h-4 text-blue-600" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-slate-500" />
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
                 )}
               </button>
 
               {isExpanded && (
-                <div className="p-3.5 pt-0 border-t border-slate-800/60 text-xs text-slate-300 space-y-3">
-                  <p className="font-medium text-cyan leading-relaxed">
+                <div className="p-4 pt-0 border-t border-slate-100 text-xs text-slate-700 space-y-3">
+                  <p className="font-medium text-blue-700 leading-relaxed text-xs">
                     {t.summary}
                   </p>
 
                   <ul className="space-y-1.5 pl-1">
                     {t.detailedText.map((dt, idx) => (
-                      <li key={idx} className="flex items-start space-x-2 text-slate-400">
-                        <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <li key={idx} className="flex items-start space-x-2 text-slate-600">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
                         <span>{dt}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="p-2.5 rounded bg-graphite-900 border border-slate-800 font-mono text-[11px] text-cyan overflow-x-auto">
+                  <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 font-mono text-xs text-blue-900 overflow-x-auto">
                     <pre>{t.cppSnippet}</pre>
                   </div>
                 </div>

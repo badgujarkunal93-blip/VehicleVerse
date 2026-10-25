@@ -16,39 +16,34 @@ export const Navbar: React.FC<NavbarProps> = ({
   onReset
 }) => {
   const tabs: { id: ActiveTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'simulation', label: '3D Simulation', icon: <Car className="w-3.5 h-3.5" /> },
-    { id: 'inheritance', label: 'Inheritance Map', icon: <Layers className="w-3.5 h-3.5" /> },
-    { id: 'execution', label: 'Execution Flow', icon: <GitCommit className="w-3.5 h-3.5" /> },
-    { id: 'learning', label: 'OOP Concepts', icon: <BookOpen className="w-3.5 h-3.5" /> },
-    { id: 'quiz', label: 'Quiz', icon: <HelpCircle className="w-3.5 h-3.5" /> },
+    { id: 'simulation', label: '3D Simulation', icon: <Car className="w-4 h-4" /> },
+    { id: 'inheritance', label: 'Inheritance Map', icon: <Layers className="w-4 h-4" /> },
+    { id: 'execution', label: 'Execution Flow', icon: <GitCommit className="w-4 h-4" /> },
+    { id: 'learning', label: 'OOP Concepts', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'quiz', label: 'Quiz', icon: <HelpCircle className="w-4 h-4" /> },
   ];
 
   return (
-    <header className="h-14 bg-graphite-950/90 border-b border-slate-800 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between select-none z-30 sticky top-0">
+    <header className="h-16 bg-white border-b border-slate-200 px-4 lg:px-6 flex items-center justify-between select-none z-30 sticky top-0 shadow-sm">
       {/* Brand & Logo */}
       <div className="flex items-center space-x-3">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(0,242,254,0.3)]">
-            <Car className="w-5 h-5 text-graphite-950 font-black" />
+        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
+          <Car className="w-5 h-5 stroke-[2.2]" />
+        </div>
+        <div>
+          <div className="flex items-center space-x-1.5">
+            <span className="font-extrabold text-base lg:text-lg tracking-tight text-slate-900 font-sans">
+              VEHICLE<span className="text-blue-600">VERSE</span>
+            </span>
           </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-extrabold text-sm sm:text-base tracking-wider bg-gradient-to-r from-cyan via-slate-100 to-purple-400 bg-clip-text text-transparent font-mono">
-                VEHICLEVERSE
-              </span>
-              <span className="text-[9px] uppercase font-mono px-1 py-0.2 rounded bg-cyan/10 border border-cyan/30 text-cyan hidden sm:inline-block">
-                C++ OOP LAB
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 hidden md:block leading-none">
-              Understand Inheritance. Experience the Drive.
-            </p>
-          </div>
+          <p className="text-xs text-slate-500 font-normal leading-none hidden sm:block">
+            Understand Inheritance. Experience the Drive.
+          </p>
         </div>
       </div>
 
       {/* Navigation Segmented Tabs */}
-      <nav className="flex items-center space-x-1 bg-graphite-900/90 p-1 rounded-lg border border-slate-800 overflow-x-auto text-xs font-mono">
+      <nav className="flex items-center space-x-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 overflow-x-auto text-xs font-sans">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -56,14 +51,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-md transition-all duration-150 whitespace-nowrap ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all duration-150 whitespace-nowrap font-medium text-xs ${
                 isActive
-                  ? 'bg-graphite-800 text-cyan border border-slate-700 shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-graphite-850'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
               }`}
             >
               {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
+              <span>{tab.label}</span>
             </button>
           );
         })}
@@ -72,29 +67,24 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Status & Reset Action */}
       <div className="flex items-center space-x-2.5">
         {/* Status Indicator */}
-        <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-graphite-900 border border-slate-800 text-[11px] font-mono">
+        <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
           <span
-            className={`w-2 h-2 rounded-full ${
-              status === 'RUNNING'
-                ? 'bg-emerald-400 animate-ping'
-                : status === 'PAUSED'
-                ? 'bg-amber-400'
-                : 'bg-cyan'
+            className={`w-2 h-2 rounded-full bg-emerald-500 ${
+              status === 'RUNNING' ? 'animate-pulse' : ''
             }`}
           />
-          <span className="text-slate-400">STATUS:</span>
-          <span className="text-slate-200 font-semibold">{status}</span>
+          <span className="tracking-wide text-[11px]">{status}</span>
         </div>
 
         {/* Global Reset */}
         <button
           type="button"
           onClick={onReset}
-          className="flex items-center space-x-1 px-2.5 py-1 rounded-md bg-graphite-800 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-cyan text-xs font-mono transition-colors shadow-sm"
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors shadow-sm"
           title="Reset simulation parameters"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden md:inline">Reset Lab</span>
+          <span className="hidden sm:inline">Reset Lab</span>
         </button>
       </div>
     </header>
